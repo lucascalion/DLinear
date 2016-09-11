@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!-- Standard Meta -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+    <!-- Site Properties -->
+    <title>Homepage</title>
+    <link rel="stylesheet" type="text/css" href="lib/semantic/semantic.min.css">
+    <style type="text/css">
+
+    </style>
+
+    <script src="lib/jquery/jquery-3.1.0.min.js"></script>
+    <script src="lib/semantic/semantic.min.js"></script>
+    <script src="lib/easeljs/easeljs-0.8.2.min.js"></script>
+
+    <script>
+      var paths = ["images/barra_aço.png","images/barra_cobre.png","images/barra_latão.png"];
+
+      $(document)
+        .ready(function() {
+          var tipo = $("#metal_type").val();
+          var stage = new createjs.Stage("canvas");
+          var bg = new createjs.Bitmap("images/regua_experimento.png");
+          bg.scaleX = 0.09;
+          bg.scaleY = 0.10;
+          stage.addChild(bg);
+          stage.update();
+        });
+        updateStage = function () {
+
+        };
+    </script>
+</head>
+
+<body>
+    <div class="ui container">
+        <div class="ui two columns grid">
+            <div class="ui row">
+                <div class="ui column">
+                  <select id="metal_type" class="ui dropdown">
+                    <option value="">Metal</option>
+                    <option value="0" selected="">Ferro</option>
+                    <option value="1">Latão</option>
+                    <option value="2">Aço</option>
+                  </select>
+                  <!-- <div id="preview_metal">
+                    <img class="tiny" src="#">
+                  </div> -->
+                </div>
+                <div class="ui column">
+                  <select id="metal_size" class="ui dropdown">
+                    <option value="">Tamanho</option>
+                    <option value="0">500mm</option>
+                    <option value="1">400mm</option>
+                    <option value="2">350mm</option>
+                    <option value="3">300mm</option>
+                  </select>
+                </div>
+            </div>
+            <div class="ui two column row">
+                <canvas id="canvas" width="1150" height="600" style="border: 1px solid black;"></canvas>
+            </div>
+        </div>
+
+
+    </div>
+</body>
+
+</html>
