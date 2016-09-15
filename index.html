@@ -19,46 +19,137 @@
     <script src="lib/easeljs/easeljs-0.8.2.min.js"></script>
 
     <script>
-      var paths = ["images/barra_aço.png","images/barra_cobre.png","images/barra_latão.png"];
+        var paths = ["images/barra_aço.png", "images/barra_cobre.png", "images/barra_latão.png"];
 
-      $(document)
-        .ready(function() {
-          var tipo = $("#metal_type").val();
-          var stage = new createjs.Stage("canvas");
-          var bg = new createjs.Bitmap("images/regua_experimento.png");
-          bg.scaleX = 0.09;
-          bg.scaleY = 0.10;
-          stage.addChild(bg);
-          stage.update();
-        });
-        updateStage = function () {
+        $(document)
+            .ready(function() {
+                var tipo = $("#metal_type").val();
+                $("#scale").val("0");
+                $("#scale").on("change", function (){
+                  var children = stage.children;
+                  for (var i = 0; i < children.length; i++) {
+                    children[i].scaleX = children[i].scaleY = getScale($(this).val());
+                  }
+                  stage.update();
+                });
+                var scale = $("#scale").val();
+                var stage = new createjs.Stage("canvas");
+                stage.mouseMoveOutside = true;
+                var bg = new createjs.Bitmap("images/regua_experimento.png");
+                stage.addChild(bg);
+                var bar = new createjs.Bitmap("images/barra_cobre.png");
+                // bar.scaleX = getScale(scale);
+                // bar.scaleY = getScale(scale);
+                var dragger_bar = new createjs.Container();
+                dragger_bar.addChild(bar);
+                stage.addChild(dragger_bar);
+                dragger_bar.x = 100;
+                dragger_bar.y = 100;
+                dragger_bar.on("mousedown", function(evt) {
+                    var ct = evt.currentTarget,
+                        local = ct.globalToLocal(evt.stageX, evt.stageY),
+                        nx = ct.regX - local.x,
+                        ny = ct.regY - local.y;
+                    //set the new regX/Y
+                    ct.regX = local.x;
+                    ct.regY = local.y;
+                    //adjust the real-position, otherwise the new regX/Y would cause a jump
+                    ct.x -= nx;
+                    ct.y -= ny;
+                });
+
+                dragger_bar.on("pressmove",function(evt) {
+          				// currentTarget will be the container that the event listener was added to:
+          				evt.currentTarget.x = evt.stageX;
+          				evt.currentTarget.y = evt.stageY;
+          				// make sure to redraw the stage to show the change:
+          				stage.update();
+          			});
+
+                var button = new createjs.Bitmap("images/botão.png");
+                // button.scaleX = getScale(scale);
+                // button.scaleY = getScale(scale);
+                var dragger_button = new createjs.Container();
+                dragger_button.addChild(button);
+                stage.addChild(dragger_button);
+                dragger_button.x = 50;
+                dragger_button.y = 50;
+                dragger_button.on("mousedown", function(evt) {
+                    var ct = evt.currentTarget,
+                        local = ct.globalToLocal(evt.stageX, evt.stageY),
+                        nx = ct.regX - local.x,
+                        ny = ct.regY - local.y;
+                    //set the new regX/Y
+                    ct.regX = local.x;
+                    ct.regY = local.y;
+                    //adjust the real-position, otherwise the new regX/Y would cause a jump
+                    ct.x -= nx;
+                    ct.y -= ny;
+                });
+
+                dragger_button.on("pressmove",function(evt) {
+          				// currentTarget will be the container that the event listener was added to:
+          				evt.currentTarget.x = evt.stageX;
+          				evt.currentTarget.y = evt.stageY;
+          				// make sure to redraw the stage to show the change:
+          				stage.update();
+          			});
+
+                $("#scale").trigger("change");
+            });
+        updateStage = function() {
 
         };
+
+        getScale = function (s) {
+          switch (s) {
+            case '0':
+              return 0.09;
+            default:
+              return parseFloat(s)/10;
+          }
+        }
     </script>
 </head>
 
 <body>
     <div class="ui container">
-        <div class="ui two columns grid">
+        <div class="ui three columns grid">
             <div class="ui row">
                 <div class="ui column">
-                  <select id="metal_type" class="ui dropdown">
+                    <select id="metal_type" class="ui dropdown">
                     <option value="">Metal</option>
                     <option value="0" selected="">Ferro</option>
                     <option value="1">Latão</option>
                     <option value="2">Aço</option>
                   </select>
-                  <!-- <div id="preview_metal">
+                    <!-- <div id="preview_metal">
                     <img class="tiny" src="#">
                   </div> -->
                 </div>
                 <div class="ui column">
-                  <select id="metal_size" class="ui dropdown">
+                    <select id="metal_size" class="ui dropdown">
                     <option value="">Tamanho</option>
                     <option value="0">500mm</option>
                     <option value="1">400mm</option>
                     <option value="2">350mm</option>
                     <option value="3">300mm</option>
+                  </select>
+                </div>
+                <div class="ui column">
+                  <label for="scale" class="ui label">Escala</label>
+                    <select id="scale" class="ui dropdown">
+                    <option value="0">9%</option>
+                    <option value="1">10%</option>
+                    <option value="2">20%</option>
+                    <option value="3">30%</option>
+                    <option value="4">40%</option>
+                    <option value="5">50%</option>
+                    <option value="6">60%</option>
+                    <option value="7">70%</option>
+                    <option value="8">80%</option>
+                    <option value="9">90%</option>
+                    <option value="10">100%</option>
                   </select>
                 </div>
             </div>
