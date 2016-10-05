@@ -17,97 +17,161 @@
     <script src="lib/jquery/jquery-3.1.0.min.js"></script>
     <script src="lib/semantic/semantic.min.js"></script>
     <script src="lib/easeljs/easeljs-0.8.2.min.js"></script>
+    <script src="lib/preloadjs/preloadjs-0.6.2.min.js"></script>
 
     <script>
-        var paths = ["images/barra_aço.png", "images/barra_cobre.png", "images/barra_latão.png"];
+        var bar_pos = {
+            x: 219,
+            y: 85
+        }
+        var paths = ["images/barra_aco.png", "images/barra_cobre.png", "images/barra_latao.png"];
+        var bg_offset = {
+            x: 0,
+            y: 0
+        };
+        var btn_targets = [{
+            name: 'b',
+            x: 936.5,
+            y: 157
+        }, {
+            name: 'c',
+            x: 199,
+            y: 157
+        }, {
+            name: 'c',
+            x: 668,
+            y: 157
+        }];
 
         $(document)
             .ready(function() {
-                var tipo = $("#metal_type").val();
-                $("#scale").val("0");
-                $("#scale").on("change", function (){
-                  var children = stage.children;
-                  for (var i = 0; i < children.length; i++) {
-                    children[i].scaleX = children[i].scaleY = getScale($(this).val());
-                  }
-                  stage.update();
-                });
-                var scale = $("#scale").val();
+
                 var stage = new createjs.Stage("canvas");
+                $("#scale").val("3");
+                $("#scale").on("change", function() {
+                    var children = stage.children;
+                    for (var i = 0; i < children.length; i++) {
+                        children[i].scaleX = children[i].scaleY = getScale($(this).val());
+                    }
+                });
+
+
                 stage.mouseMoveOutside = true;
                 var bg = new createjs.Bitmap("images/regua_experimento.png");
-                stage.addChild(bg);
-                var bar = new createjs.Bitmap("images/barra_cobre.png");
-                // bar.scaleX = getScale(scale);
-                // bar.scaleY = getScale(scale);
-                var dragger_bar = new createjs.Container();
-                dragger_bar.addChild(bar);
-                stage.addChild(dragger_bar);
-                dragger_bar.x = 100;
-                dragger_bar.y = 100;
-                dragger_bar.on("mousedown", function(evt) {
-                    var ct = evt.currentTarget,
-                        local = ct.globalToLocal(evt.stageX, evt.stageY),
-                        nx = ct.regX - local.x,
-                        ny = ct.regY - local.y;
-                    //set the new regX/Y
-                    ct.regX = local.x;
-                    ct.regY = local.y;
-                    //adjust the real-position, otherwise the new regX/Y would cause a jump
-                    ct.x -= nx;
-                    ct.y -= ny;
+                bg.y = 100;
+                bg.x = 6;
+                bg_offset.y = bg.y;
+                bg_offset.x = bg.x;
+                stage.addChildAt(bg,0);
+
+                
+
+                var btn = setupDragBtn(stage)
+                setupDragBar(stage, btn);
+
+                createjs.Ticker.addEventListener("tick", function() {
+                    stage.update();
                 });
-
-                dragger_bar.on("pressmove",function(evt) {
-          				// currentTarget will be the container that the event listener was added to:
-          				evt.currentTarget.x = evt.stageX;
-          				evt.currentTarget.y = evt.stageY;
-          				// make sure to redraw the stage to show the change:
-          				stage.update();
-          			});
-
-                var button = new createjs.Bitmap("images/botão.png");
-                // button.scaleX = getScale(scale);
-                // button.scaleY = getScale(scale);
-                var dragger_button = new createjs.Container();
-                dragger_button.addChild(button);
-                stage.addChild(dragger_button);
-                dragger_button.x = 50;
-                dragger_button.y = 50;
-                dragger_button.on("mousedown", function(evt) {
-                    var ct = evt.currentTarget,
-                        local = ct.globalToLocal(evt.stageX, evt.stageY),
-                        nx = ct.regX - local.x,
-                        ny = ct.regY - local.y;
-                    //set the new regX/Y
-                    ct.regX = local.x;
-                    ct.regY = local.y;
-                    //adjust the real-position, otherwise the new regX/Y would cause a jump
-                    ct.x -= nx;
-                    ct.y -= ny;
-                });
-
-                dragger_button.on("pressmove",function(evt) {
-          				// currentTarget will be the container that the event listener was added to:
-          				evt.currentTarget.x = evt.stageX;
-          				evt.currentTarget.y = evt.stageY;
-          				// make sure to redraw the stage to show the change:
-          				stage.update();
-          			});
 
                 $("#scale").trigger("change");
-            });
-        updateStage = function() {
+                $('#metal_type').trigger("change");
+                $('#metal_size').trigger("change");
 
+            });
+
+        setupDragBtn = function(stage) {
+            var button = new createjs.Bitmap("images/btn.png");
+            stage.addChildAt(button,2);
+            $('#metal_size').on('change', function() {
+                if (stage.isRunning)
+                    return;
+                var val = $(this).val();
+                var point = btn_targets[val];
+                button.x = bg_offset.x + point.x;
+                button.y = bg_offset.y + point.y;
+            });
+            return button;
+            // var dragger_button = new createjs.Container();
+            // dragger_button.addChild(button);
+            // stage.addChild(dragger_button);
+            // dragger_button.x = bg_offset.x + 936.5;
+            // dragger_button.y = bg_offset.y + 157;
+            // dragger_button.on("mousedown", function(evt) {
+            //     if (true)
+            //         return;
+            //     var ct = evt.currentTarget,
+            //         local = ct.globalToLocal(evt.stageX, evt.stageY),
+            //         nx = ct.regX - local.x,
+            //         ny = ct.regY - local.y;
+            //     //set the new regX/Y
+            //     ct.regX = local.x;
+            //     ct.regY = local.y;
+            //     //adjust the real-position, otherwise the new regX/Y would cause a jump
+            //     ct.x -= nx;
+            //     ct.y -= ny;
+            // });
+            //
+            // dragger_button.on("pressmove", function(evt) {
+            //     // currentTarget will be the container that the event listener was added to:
+            //     evt.currentTarget.x = evt.stageX;
+            //     evt.currentTarget.y = evt.stageY;
+            //     console.log("Barra posX: " + evt.stageX + ", posY: " + evt.stageY);
+            //     // make sure to redraw the stage to show the change:
+            //     stage.update();
+            // });
         };
 
-        getScale = function (s) {
-          switch (s) {
-            case '0':
-              return 0.09;
-            default:
-              return parseFloat(s)/10;
-          }
+        setupDragBar = function(stage, btn) {
+            var bar = null;
+            $('#metal_type').on('change', function() {
+                if (stage.isRunning)
+                    return;
+                var val = $(this).val();
+                var newImg = paths[val];
+                if(bar)
+                  stage.removeChild(bar);
+                bar = new createjs.Bitmap(newImg);
+                stage.addChildAt(bar, stage.getChildIndex(btn));
+                bar.x = bg_offset.x + bar_pos.x;
+                bar.y = bg_offset.y + bar_pos.y;
+                bar.scaleX = bar.scaleY = getScale($('#scale').val());
+            });
+            // var dragger_bar = new createjs.Container();
+            // dragger_bar.addChild(bar);
+            // stage.addChild(dragger_bar);
+            // dragger_bar.x = 100;
+            // dragger_bar.y = 100;
+            // dragger_bar.on("mousedown", function(evt) {
+            //   if(true) return;
+            //     var ct = evt.currentTarget,
+            //         local = ct.globalToLocal(evt.stageX, evt.stageY),
+            //         nx = ct.regX - local.x,
+            //         ny = ct.regY - local.y;
+            //     //set the new regX/Y
+            //     ct.regX = local.x;
+            //     ct.regY = local.y;
+            //     //adjust the real-position, otherwise the new regX/Y would cause a jump
+            //     ct.x -= nx;
+            //     ct.y -= ny;
+            // });
+            //
+            // dragger_bar.on("pressmove", function(evt) {
+            //     // currentTarget will be the container that the event listener was added to:
+            //     evt.currentTarget.x = evt.stageX;
+            //     evt.currentTarget.y = evt.stageY;
+            //     console.log("Barra posX: " + evt.stageX + ", posY: " + evt.stageY);
+            //     // make sure to redraw the stage to show the change:
+            //     stage.update();
+            // });
+        };
+
+        getScale = function(s) {
+            switch (s) {
+                case '0':
+                    return 0.09;
+                default:
+                    return parseFloat(s) / 10;
+            }
         }
     </script>
 </head>
@@ -117,27 +181,23 @@
         <div class="ui three columns grid">
             <div class="ui row">
                 <div class="ui column">
+                    <label for="metal_type" class="ui label">Tipo de Metal</label>
                     <select id="metal_type" class="ui dropdown">
-                    <option value="">Metal</option>
-                    <option value="0" selected="">Ferro</option>
-                    <option value="1">Latão</option>
-                    <option value="2">Aço</option>
+                    <option value="1">Ferro</option>
+                    <option value="2">Latão</option>
+                    <option value="0">Aço</option>
                   </select>
-                    <!-- <div id="preview_metal">
-                    <img class="tiny" src="#">
-                  </div> -->
                 </div>
                 <div class="ui column">
+                    <label for="metal_size" class="ui label">Tamanho da Barra</label>
                     <select id="metal_size" class="ui dropdown">
-                    <option value="">Tamanho</option>
                     <option value="0">500mm</option>
                     <option value="1">400mm</option>
-                    <option value="2">350mm</option>
-                    <option value="3">300mm</option>
+                    <option value="2">300mm</option>
                   </select>
                 </div>
                 <div class="ui column">
-                  <label for="scale" class="ui label">Escala</label>
+                    <label for="scale" class="ui label">Escala</label>
                     <select id="scale" class="ui dropdown">
                     <option value="0">9%</option>
                     <option value="1">10%</option>
