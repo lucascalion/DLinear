@@ -16,17 +16,17 @@
       size_b: "images/barra_aco_b.png",
       size_c: "images/barra_aco_c.png",
       size_d: "images/barra_aco_d.png",
-      coef: 22e-6,
+      coef: 17e-6,
   }, {
       size_b: "images/barra_cobre_b.png",
       size_c: "images/barra_cobre_c.png",
       size_d: "images/barra_cobre_d.png",
-      coef: 17e-6,
+      coef: 11e-6,
   }, {
       size_b: "images/barra_latao_b.png",
       size_c: "images/barra_latao_c.png",
       size_d: "images/barra_latao_d.png",
-      coef: 15e-6,
+      coef: 19e-6,
   }];
   var bg_offset = {
       x: 0,
@@ -74,36 +74,36 @@
           var bg_container = new createjs.Container();
           var med_container = new createjs.Container();
           med_container.name = "medidor";
-          med_container.reset = function () {
-            this.x = this.dfX;
-            this.y = this.dfY;
-          }
+          med_container.reset = function() {
+              this.x = this.dfX;
+              this.y = this.dfY;
+          };
           var mbar_container = new createjs.Container();
           mbar_container.name = "barra";
           var bar_container = new createjs.Container();
           bar_container.name = "medidor_barra";
-          bar_container.reset = function () {
-            this.x = this.dfX;
-            this.y = this.dfY;
-          }
+          bar_container.reset = function() {
+              this.x = this.dfX;
+              this.y = this.dfY;
+          };
           var plug_container = new createjs.Container();
           mbar_container.tickChildren = plug_container.tickChildren = bg_container.tickChildren = false;
           var grad_container = new createjs.Container();
           grad_container.name = "grad";
-          grad_container.reset = function () {
-            this.x = this.dfX;
-            this.y = this.dfY;
-          }
+          grad_container.reset = function() {
+              this.x = this.dfX;
+              this.y = this.dfY;
+          };
           var view_container = new createjs.Container();
-          view_container.reset = function () {
-            this.x = this.dfX;
-            this.y = this.dfY;
-          }
+          view_container.reset = function() {
+              this.x = this.dfX;
+              this.y = this.dfY;
+          };
           view_container.name = "view";
           var vapor_container = new createjs.Container();
-          vapor_container.reset = function () {
-            this.alpha = 0;
-          }
+          vapor_container.reset = function() {
+              this.alpha = 0;
+          };
           vapor_container.name = "vapor";
           stage.addChildAt(bg_container, 0);
           stage.addChildAt(med_container, 1);
@@ -150,8 +150,8 @@
               return;
           var val = $(this).val();
           var point = plug_targets[val];
-          if(button) {
-            layer.removeChild(button);
+          if (button) {
+              layer.removeChild(button);
           }
           button = new createjs.Bitmap(point.img);
           layer.addChild(button);
@@ -200,15 +200,15 @@
           var newImg = null;
           var metal = metals[val];
           switch (env.size) {
-            case 500:
-              newImg = metal.size_b;
-              break;
-            case 400:
-              newImg = metal.size_c;
-              break;
-            case 300:
-                newImg = metal.size_d;
-                break;
+              case 500:
+                  newImg = metal.size_b;
+                  break;
+              case 400:
+                  newImg = metal.size_c;
+                  break;
+              case 300:
+                  newImg = metal.size_d;
+                  break;
           }
 
           if (bar) {
@@ -271,10 +271,10 @@
           curr_w = 45,
           accm = 30;
       shape.graphics.drawRect(0, 0, curr_w, 47);
-      layer.reset = function () {
-        shape.graphics.clear();
-        shape.graphics.drawRect(0, 0, curr_w, 47);
-      }
+      layer.reset = function() {
+          shape.graphics.clear();
+          shape.graphics.drawRect(0, 0, curr_w, 47);
+      };
       shape.on("tick", function(event) {
           if (env.start) {
               var vapor = stage.getChildByName("vapor");
@@ -295,8 +295,8 @@
                       shape.graphics.beginLinearGradientFill(animMatrix[step].colors, animMatrix[step].ratio, 0, 0, curr_w, 47);
                       shape.graphics.drawRect(0, 0, curr_w, 47);
                       shape.graphics.endFill();
-                      if(vapor.alpha < 1)
-                        vapor.alpha += 0.005;
+                      if (vapor.alpha < 1)
+                          vapor.alpha += 0.005;
                       break;
                   default:
                       calcGradAnim(curr_w);
@@ -305,8 +305,8 @@
                       shape.graphics.beginLinearGradientFill(animMatrix[step].colors, animMatrix[step].ratio, 0, 0, curr_w, 47);
                       shape.graphics.drawRect(0, 0, curr_w, 47);
                       shape.graphics.endFill();
-                      if(vapor.alpha < 1)
-                        vapor.alpha += 0.01;
+                      if (vapor.alpha < 1)
+                          vapor.alpha += 0.01;
                       //console.log(env.anim);
                       break;
               }
@@ -316,27 +316,30 @@
                   if (env.curr === 0) {
 
                       env.curr = env.coef * env.size * 10;
-                      env.max = env.coef * env.size * 74;
-                      env.toText = env.curr;
+                      env.max = env.coef * env.size * 75;
+                      //console.log(env.max);
+                      env.toText.text = env.curr.toFixed(5);
                       //console.log("Inicial curr:"+env.curr);
                   } else {
-                      env.curr += (event.delta * BAR_SPEED)/1000;
-                      env.curr = env.curr > env.max ? env.max : env.curr;
-                      env.toText = env.curr;
+                      env.curr += (event.delta * BAR_SPEED) / 1000;
+                      //console.log("OLD "+env.curr);
+                      env.curr = env.curr >= env.max ? env.max : env.curr;
+                      //console.log("NORM "+env.curr);
+                      env.toText.text = env.curr.toFixed(5);
                       //console.log("Curr:"+env.curr);
                   }
                   var barra = stage.getChildByName("barra");
                   var mbarra = stage.getChildByName("medidor_barra");
                   var medidor = stage.getChildByName("medidor");
-                  
-                  var mov = (event.delta * env.coef)*100
+
+                  var mov = (event.delta * env.coef) * 100;
                   barra.x -= mov;
                   mbarra.x -= mov;
                   medidor.x -= mov;
-                  if(vapor.alpha < 1)
-                    vapor.alpha += 0.25;
-                  accm+= 0.25;
-                  
+                  if (vapor.alpha < 1)
+                      vapor.alpha += 0.25;
+                  accm += 0.25;
+
                   calcBarAnim(env.curr, env.max);
 
                   if (env.anim > 6) {
@@ -465,27 +468,28 @@
       texto.font = "bold 126px Digital";
       texto.color = "green";
       texto.text = "0.00000";
-      txtBG.graphics.ss(10).s("#FFFFFF").f("#000000").rr(0, 0, 450, 250,15);
+      txtBG.graphics.ss(10).s("#FFFFFF").f("#000000").rr(0, 0, 450, 250, 15);
       texto.on("tick", function(event) {
           if (env.start) {
-            if (env.anim <= 2) {
-              texto.text = "0.00000";
-            } else {
-              texto.text = env.toText.toFixed(5);
-            }
+              if (env.anim <= 2) {
+                  texto.text = "0.00000";
+              } else {
+                  //texto.text = env.toText.toFixed(5);
+              }
           }
       });
       layer.addChild(txtBG);
       layer.addChild(texto);
-      texto.x = 90-55;
-      texto.y = 200-154;
+      texto.x = 90 - 55;
+      texto.y = 200 - 154;
       layer.x = 55;
       layer.y = 154;
       layer.dfX = layer.x;
       layer.dfY = layer.y;
-      layer.reset = function () {
-        texto.text = "0.00000";
-      }
+      layer.reset = function() {
+          texto.text = "0.00000";
+      };
+      env.toText = texto;
       // layer.on("mousedown", function(evt) {
       //     if (true) return;
       //     var ct = evt.currentTarget,
@@ -533,7 +537,7 @@
           ct.x -= nx;
           ct.y -= ny;
       });
-      
+
       layer.on("pressmove", function(evt) {
           // currentTarget will be the container that the event listener was added to:
           evt.currentTarget.x = evt.stageX;
